@@ -1,0 +1,286 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'ECS Task Definition and Service for Fluenccy Application'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues: [development, staging, production]
+    Description: Environment name
+  
+  ECRRepositoryURI:
+    Type: String
+    Description: ECR Repository URI (e.g., 123456789012.dkr.ecr.us-east-1.amazonaws.com/production-fluenccy-app)
+    ConstraintDescription: Must be a valid ECR repository URI
+  
+  ImageTag:
+    Type: String
+    Default: latest
+    Description: Docker image tag to deploy
+  
+  ECSClusterName:
+    Type: String
+    Description: Name of the existing ECS cluster
+    Default: production-fluenccy-cluster
+  
+  VPCId:
+    Type: String
+    Description: VPC ID where the ECS service will run
+    ConstraintDescription: Must be a valid VPC ID
+  
+  PrivateSubnet1Id:
+    Type: String
+    Description: Private Subnet 1 ID for ECS tasks
+    ConstraintDescription: Must be a valid subnet ID
+  
+  PrivateSubnet2Id:
+    Type: String
+    Description: Private Subnet 2 ID for ECS tasks
+    ConstraintDescription: Must be a valid subnet ID
+  
+  ECSSecurityGroupId:
+    Type: String
+    Description: Security Group ID for ECS tasks
+    ConstraintDescription: Must be a valid security group ID
+  
+  TargetGroupArn:
+    Type: String
+    Description: Target Group ARN for load balancer
+    ConstraintDescription: Must be a valid target group ARN
+  
+  LogGroupName:
+    Type: String
+    Default: /ecs/production-fluenccy-app
+    Description: CloudWatch Log Group name
+  
+  TaskCPU:
+    Type: String
+    Default: '1024'
+    AllowedValues: ['256', '512', '1024', '2048', '4096']
+    Description: CPU units for ECS tasks (1024 = 1 vCPU)
+  
+  TaskMemory:
+    Type: String
+    Default: '2048'
+    AllowedValues: ['512', '1024', '2048', '3072', '4096', '5120', '6144', '7168', '8192']
+    Description: Memory for ECS tasks (MB)
+  
+  DesiredCount:
+    Type: Number
+    Default: 2
+    MinValue: 0
+    MaxValue: 10
+    Description: Desired number of ECS tasks
+  
+  ContainerPort:
+    Type: Number
+    Default: 3001
+    MinValue: 1
+    MaxValue: 65535
+    Description: Port that the container listens on
+  
+  HealthCheckPath:
+    Type: String
+    Default: /api/healthcheck
+    Description: Health check path for the application
+  
+  DatabaseHost:
+    Type: String
+    Description: Database host endpoint
+    Default: ''
+  
+  DatabasePort:
+    Type: String
+    Description: Database port
+    Default: '5432'
+  
+  DatabaseName:
+    Type: String
+    Description: Database name
+    Default: fluenccy
+  
+  DatabaseUsername:
+    Type: String
+    Description: Database username
+    Default: postgres
+  
+  DatabasePassword:
+    Type: String
+    NoEcho: true
+    Description: Database password
+  
+  RedisHost:
+    Type: String
+    Description: Redis host endpoint
+    Default: ''
+  
+  RedisPort:
+    Type: String
+    Description: Redis port
+    Default: '6379'
+  
+  RedisPassword:
+    Type: String
+    NoEcho: true
+    Description: Redis password
+  
+  NodeEnvironment:
+    Type: String
+    Default: production
+    AllowedValues: [development, staging, production]
+    Description: Node.js environment
+
+Resources:
+  # ECS Task Definition
+  ECSTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub '${Environment}-fluenccy-app'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: !Ref TaskCPU
+      Memory: !Ref TaskMemory
+      ExecutionRoleArn: !Sub 'arn:aws:iam::${AWS::AccountId}:role/${Environment}-fluenccy-ecs-execution-role'
+      TaskRoleArn: !Sub 'arn:aws:iam::${AWS::AccountId}:role/${Environment}-fluenccy-ecs-task-role'
+      ContainerDefinitions:
+        - Name: !Sub '${Environment}-fluenccy-app'
+          Image: !Sub '${ECRRepositoryURI}:${ImageTag}'
+          PortMappings:
+            - ContainerPort: !Ref ContainerPort
+              Protocol: tcp
+          Essential: true
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroupName
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: ecs
+          Environment:
+            - Name: NODE_ENV
+              Value: !Ref NodeEnvironment
+            - Name: PORT
+              Value: !Sub '${ContainerPort}'
+            - Name: POSTGRES_HOST
+              Value: !Ref DatabaseHost
+            - Name: POSTGRES_PORT
+              Value: !Ref DatabasePort
+            - Name: POSTGRES_DATABASE
+              Value: !Ref DatabaseName
+            - Name: POSTGRES_USER
+              Value: !Ref DatabaseUsername
+            - Name: POSTGRES_PASSWORD
+              Value: !Ref DatabasePassword
+            - Name: REDIS_HOST
+              Value: !Ref RedisHost
+            - Name: REDIS_PORT
+              Value: !Ref RedisPort
+            - Name: REDIS_PASSWORD
+              Value: !Ref RedisPassword
+          HealthCheck:
+            Command:
+              - CMD-SHELL
+              - !Sub |
+                  node -e "require('http').get('http://localhost:${ContainerPort}${HealthCheckPath}', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+            Interval: 30
+            Timeout: 5
+            Retries: 3
+            StartPeriod: 60
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-fluenccy-task-definition'
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Application
+          Value: fluenccy
+
+  # ECS Service
+  ECSService:
+    Type: AWS::ECS::Service
+    DependsOn: ECSTaskDefinition
+    Properties:
+      ServiceName: !Sub '${Environment}-fluenccy-service'
+      Cluster: !Ref ECSClusterName
+      TaskDefinition: !Ref ECSTaskDefinition
+      DesiredCount: !Ref DesiredCount
+      LaunchType: FARGATE
+      PlatformVersion: LATEST
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+            - !Ref PrivateSubnet1Id
+            - !Ref PrivateSubnet2Id
+          SecurityGroups:
+            - !Ref ECSSecurityGroupId
+          AssignPublicIp: ENABLED
+      LoadBalancers:
+        - TargetGroupArn: !Ref TargetGroupArn
+          ContainerName: !Sub '${Environment}-fluenccy-app'
+          ContainerPort: !Ref ContainerPort
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
+      HealthCheckGracePeriodSeconds: 300
+      EnableExecuteCommand: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-fluenccy-service'
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Application
+          Value: fluenccy
+
+  # Auto Scaling Target
+  ECSServiceAutoScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    DependsOn: ECSService
+    Properties:
+      MaxCapacity: 10
+      MinCapacity: 1
+      ResourceId: !Sub 'service/${ECSClusterName}/${Environment}-fluenccy-service'
+      RoleARN: !Sub 'arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService'
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+
+  # Auto Scaling Policy - Scale Out
+  ECSServiceAutoScalingPolicyScaleOut:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    DependsOn: ECSServiceAutoScalingTarget
+    Properties:
+      PolicyName: !Sub '${Environment}-fluenccy-scale-out'
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref ECSServiceAutoScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 70.0
+        ScaleOutCooldown: 300
+        ScaleInCooldown: 300
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ECSServiceAverageCPUUtilization
+
+Outputs:
+  TaskDefinitionArn:
+    Description: ECS Task Definition ARN
+    Value: !Ref ECSTaskDefinition
+    Export:
+      Name: !Sub '${Environment}-fluenccy-task-definition-arn'
+
+  ServiceArn:
+    Description: ECS Service ARN
+    Value: !Ref ECSService
+    Export:
+      Name: !Sub '${Environment}-fluenccy-service-arn'
+
+  ServiceName:
+    Description: ECS Service Name
+    Value: !Sub '${Environment}-fluenccy-service'
+    Export:
+      Name: !Sub '${Environment}-fluenccy-service-name'
+
+  AutoScalingTargetArn:
+    Description: Auto Scaling Target ARN
+    Value: !Ref ECSServiceAutoScalingTarget
+    Export:
+      Name: !Sub '${Environment}-fluenccy-autoscaling-target-arn'

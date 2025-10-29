@@ -1,0 +1,19 @@
+schema: ./graphql-schema.json
+documents:
+  - "./src/client/**/*.graphql.ts"
+  - "!./src/client/**/use-query-local-*.graphql.ts"
+override: true
+generates:
+  ./src/graphql-codegen.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+    config:
+      avoidOptionals:
+        field: true
+        inputValue: false
+        object: true
+        defaultValue: true
+      enumsAsTypes: true
+      skipTypename: true
+      typesPrefix: Gql

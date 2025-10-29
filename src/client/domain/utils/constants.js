@@ -1,0 +1,1 @@
+export const tradeCurrencies = ['USD','EUR','JPY','GBP','AUD','CAD','NZD','CNY'];

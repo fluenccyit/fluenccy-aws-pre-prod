@@ -1,0 +1,23 @@
+{
+  "presets": [
+    "@babel/env",
+    "@babel/react",
+    "@babel/typescript"
+  ],
+  "plugins": [
+    "@babel/proposal-class-properties",
+    "@babel/proposal-object-rest-spread",
+    ["@babel/plugin-transform-runtime", { "regenerator": true }],
+    ["module-resolver", {
+      "alias": {
+        "@assets": "./src/client/assets",
+        "@client": "./src/client/domain",
+        "@graphql": "./src/graphql-codegen.ts",
+        "@server": "./src/server/domain",
+        "@shared": "./src/shared",
+        "@test/client": "./src/client/test",
+        "@test/server": "./src/server/test"
+      }
+    }]
+  ]
+}

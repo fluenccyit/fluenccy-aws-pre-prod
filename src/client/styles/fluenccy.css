@@ -1,0 +1,6 @@
+@import "./src/client/styles/font.css";
+@import "./src/client/styles/base.css";
+@import "./src/client/styles/vendor.css";
+
+@import "react-datepicker/dist/react-datepicker.css";
+@import "./src/client/styles/input.css";

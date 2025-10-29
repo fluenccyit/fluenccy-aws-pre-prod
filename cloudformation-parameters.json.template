@@ -1,0 +1,77 @@
+[
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "production",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "VpcCidr",
+    "ParameterValue": "10.0.0.0/16",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "PublicSubnet1Cidr",
+    "ParameterValue": "10.0.1.0/24",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "PublicSubnet2Cidr",
+    "ParameterValue": "10.0.2.0/24",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "PrivateSubnet1Cidr",
+    "ParameterValue": "10.0.3.0/24",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "PrivateSubnet2Cidr",
+    "ParameterValue": "10.0.4.0/24",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "DatabasePassword",
+    "ParameterValue": "YOUR_SECURE_DATABASE_PASSWORD",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "RedisPassword",
+    "ParameterValue": "YOUR_SECURE_REDIS_PASSWORD",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "DatabaseInstanceClass",
+    "ParameterValue": "db.t3.micro",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "RedisNodeType",
+    "ParameterValue": "cache.t3.micro",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "DatabaseAllocatedStorage",
+    "ParameterValue": "20",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "DatabaseBackupRetentionPeriod",
+    "ParameterValue": "7",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "ECSDesiredCount",
+    "ParameterValue": "2",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "ECSCPU",
+    "ParameterValue": "1024",
+    "UsePreviousValue": false
+  },
+  {
+    "ParameterKey": "ECSMemory",
+    "ParameterValue": "2048",
+    "UsePreviousValue": false
+  }
+]

@@ -1,0 +1,34 @@
+import { BaseDbo } from '@server/common';
+
+export type OrgEntitlementDbo = BaseDbo & {
+  id: string;
+  orgId: string;
+  spotPercentage: number;
+  forwardPercentage: number;
+  orderPercentage: number;
+  marginPercentage: number;
+  avgOrder: number;
+  budgetDiscount: number;
+  hedgePercentage: number;
+  hedgeAdjustment: number;
+  EFTAdjustment: number;
+  volAdjustment: number;
+  orderAdjustmentPlus: number;
+  orderAdjustmentMinus: number;
+  orderProbability: number;
+  minimumProbability: number;
+  maximumProbability: number;
+  minPercentAboveSpot: number;
+  maxPercentOnOrder: number;
+  fi_name: string;
+  fi_email: string;
+  plan_approval_email:string;
+  maxForwardPercent:number;
+  minForwardPercent:number;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+  forwardMarginPercentage: number;
+  limitOrderMarginPercentage: number;
+  spotMarginPercentage: number;
+  setOptimised: boolean;
+};

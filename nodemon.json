@@ -1,0 +1,7 @@
+{
+  "ignore": ["node_modules"],
+  "watch": ["src/server/*"],
+  "exec": "babel-node --extensions \".ts\" src/server/index.ts",
+  "ext": "ts",
+  "delay": "1000"
+}

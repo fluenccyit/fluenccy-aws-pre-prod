@@ -1,0 +1,47 @@
+{
+  "serviceName": "fluenccy-service",
+  "cluster": "fluenccy-cluster",
+  "taskDefinition": "fluenccy-app",
+  "desiredCount": {{ECS_DESIRED_COUNT}},
+  "launchType": "FARGATE",
+  "platformVersion": "LATEST",
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": [
+        "subnet-YOUR_SUBNET_1",
+        "subnet-YOUR_SUBNET_2"
+      ],
+      "securityGroups": [
+        "sg-YOUR_SECURITY_GROUP"
+      ],
+      "assignPublicIp": "ENABLED"
+    }
+  },
+  "loadBalancers": [
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:YOUR_REGION:YOUR_ACCOUNT_ID:targetgroup/fluenccy-tg/YOUR_TARGET_GROUP_ID",
+      "containerName": "fluenccy-app",
+      "containerPort": 3001
+    }
+  ],
+  "deploymentConfiguration": {
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 50,
+    "deploymentCircuitBreaker": {
+      "enable": true,
+      "rollback": true
+    }
+  },
+  "healthCheckGracePeriodSeconds": 300,
+  "enableExecuteCommand": true,
+  "tags": [
+    {
+      "key": "Environment",
+      "value": "production"
+    },
+    {
+      "key": "Application",
+      "value": "fluenccy"
+    }
+  ]
+}

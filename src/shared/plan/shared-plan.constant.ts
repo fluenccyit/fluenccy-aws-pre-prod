@@ -1,0 +1,8 @@
+export const PLAN_PERFORM_BUDGET_RATE_MONTH_COUNT = 6;
+export const PLAN_PERFORM_BUDGET_RATE_SCORE_PAYABLES_ADJUSTMENT = 0.85;
+export const PLAN_PERFORM_PERIOD_ADJUSTMENT = {
+  6: 0.1,
+  4: 0.15,
+  2: 0.25,
+  spot: 0.5,
+} as const;

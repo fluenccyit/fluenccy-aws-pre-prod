@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=fluenccy
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=6290
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=secret
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - fluenccy-network
+
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: fluenccy
+      POSTGRES_PASSWORD: 6290
+      POSTGRES_USER: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fluenccy-network
+
+  redis:
+    image: redis:6.2-alpine
+    command: redis-server --requirepass secret
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - fluenccy-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  fluenccy-network:
+    driver: bridge
