@@ -4,35 +4,6 @@
  */
 exports.up = function (knex) {
   return knex.schema
-    .dropTableIfExists('sendemail')
-    .dropTableIfExists('crm_import_logs')
-    .dropTableIfExists('crm_entry_logs')
-    .dropTableIfExists('crm_entitlement_item')
-    .dropTableIfExists('crm_feedback')
-    .dropTableIfExists('crm_entries')
-    .dropTableIfExists('crm_entitlements')
-    .dropTableIfExists('quote_invoice')
-    .dropTableIfExists('recurring_plan')
-    .dropTableIfExists('buying_schedule')
-    .dropTableIfExists('hedge_invoice_basket')
-    .dropTableIfExists('hedge_payment')
-    .dropTableIfExists('hedge_invoice')
-    .dropTableIfExists('import_logs')
-    .dropTableIfExists('import_files')
-    .dropTableIfExists('xero_token_set')
-    .dropTableIfExists('org_entitlements')
-    .dropTableIfExists('financial_products')
-    .dropTableIfExists('config')
-    .dropTableIfExists('authentication_code')
-    .dropTableIfExists('payment')
-    .dropTableIfExists('invoice')
-    .dropTableIfExists('forward_point')
-    .dropTableIfExists('rate')
-    .dropTableIfExists('organisation_user')
-    .dropTableIfExists('organisation')
-    .dropTableIfExists('tenant')
-    .dropTableIfExists('user')
-    .dropTableIfExists('account')
     .createTable('account', (table) => {
       table.string('id').primary().unique();
       table.string('type').notNullable();

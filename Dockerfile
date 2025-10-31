@@ -4,6 +4,8 @@ FROM node:14.21.3-alpine
 # Set working directory
 WORKDIR /app
 
+RUN mkdir -p /app/uploads
+
 # Install system dependencies
 RUN apk add --no-cache \
     python3 \

@@ -2,7 +2,9 @@ import Knex, { Config as KnexConfig } from 'knex';
 import { types as postgresTypes } from 'pg';
 import { envService } from './env.service';
 import { loggerService } from './logger.service';
-const seedAccounts = require('../../../../../seeds/01_accounts');
+const seedLocal = require('../../../../../seeds/01_local');
+const seedStaging = require('../../../../../seeds/02_staging');
+const seedProduction = require('../../../../../seeds/03_production');
 
 type KnexInstance = Knex<any, unknown[]>;
 type Table =
@@ -80,11 +82,11 @@ class DbService {
         //     //     console.log('Tables:', result);
         //     //   });
 
-        //     this._knex('public.user')
-        //       .select('*')
-        //       .then((result) => {
-        //         console.log('user table data:', result);
-        //       });
+            // this._knex('public.user')
+            //   .select('*')
+            //   .then((result) => {
+            //     console.log('user table data:', result);
+            //   });
 
             
         //   }
@@ -93,7 +95,7 @@ class DbService {
         loggerService.info('Database connected successfully.');
         
         // Check if user table is empty and run seeding if needed
-        await this.checkAndSeedDatabase();
+        // await this.checkAndSeedDatabase();
       } catch (error) {
         loggerService.error('Failed to connect to the database.', {
           service: 'DbService',
@@ -162,6 +164,48 @@ class DbService {
     }
   };
 
+  dropAllTables = async () => {
+    if (!this._knex) {
+      throw new Error('Database connection not initialized. Call init() first.');
+    }
+
+    console.log('Proceeding with dropping all tables.');
+
+    this._knex.schema
+      .dropTableIfExists('sendemail')
+      .dropTableIfExists('crm_import_logs')
+      .dropTableIfExists('crm_entry_logs')
+      .dropTableIfExists('crm_entitlement_item')
+      .dropTableIfExists('crm_feedback')
+      .dropTableIfExists('crm_entries')
+      .dropTableIfExists('crm_entitlements')
+      .dropTableIfExists('quote_invoice')
+      .dropTableIfExists('recurring_plan')
+      .dropTableIfExists('buying_schedule')
+      .dropTableIfExists('hedge_invoice_basket')
+      .dropTableIfExists('hedge_payment')
+      .dropTableIfExists('hedge_invoice')
+      .dropTableIfExists('import_logs')
+      .dropTableIfExists('import_files')
+      .dropTableIfExists('xero_token_set')
+      .dropTableIfExists('org_entitlements')
+      .dropTableIfExists('financial_products')
+      .dropTableIfExists('config')
+      .dropTableIfExists('authentication_code')
+      .dropTableIfExists('payment')
+      .dropTableIfExists('invoice')
+      .dropTableIfExists('forward_point')
+      .dropTableIfExists('rate')
+      .dropTableIfExists('organisation_user')
+      .dropTableIfExists('organisation')
+      .dropTableIfExists('tenant')
+      .dropTableIfExists('user')
+      .dropTableIfExists('account')
+      .then(() => {
+        console.log('Dropped all specified tables for debug purposes.');
+      });
+  };
+
   checkAndSeedDatabase = async () => {
     if (!this._knex) {
       throw new Error('Database connection not initialized. Call init() first.');
@@ -176,9 +220,15 @@ class DbService {
         loggerService.info('User table is empty. Running database seeding...', {
           service: 'DbService',
         });
-
+        console.log('envService.isLocal()', envService.isLocal());
         // Run the seed function
-        await seedAccounts.seed(this._knex);
+        if (envService.isLocal()) {
+          await seedLocal.seed(this._knex);
+        } else if (envService.isStaging()) {
+          await seedStaging.seed(this._knex);
+        } else if (envService.isProduction()) {
+          await seedProduction.seed(this._knex);
+        }
 
         loggerService.info('Database seeding completed successfully.', {
           service: 'DbService',

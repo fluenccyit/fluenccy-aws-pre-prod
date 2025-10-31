@@ -1,11 +1,11 @@
 exports.seed = async (knex) => {
-  await knex('payment').del();
-  await knex('invoice').del();
-  await knex('organisation_user').del();
-  await knex('organisation').del();
-  await knex('tenant').del();
-  await knex('user').del();
-  await knex('account').del();
+  // await knex('payment').del();
+  // await knex('invoice').del();
+  // await knex('organisation_user').del();
+  // await knex('organisation').del();
+  // await knex('tenant').del();
+  // await knex('user').del();
+  // await knex('account').del();
 
   await knex('account').insert([
     {
@@ -18,7 +18,7 @@ exports.seed = async (knex) => {
   await knex('user').insert([
     {
       id: 'usr_6c526926-cf6b-4244-9faf-6ad426e797f6',
-      firebaseUid: 'B6qyOaIJWTUxNXcnSHavkmaZuX42',  // this refers to a user that has been created in firebase manually for 
+      firebaseUid: 'kvljqiFzHkSg6nWVd3hEr29cEsC2',  // this refers to a user that has been created in firebase manually for 
       firstName: 'Super',
       lastName: 'Dealer',
       role: 'superdealer',
@@ -26,30 +26,12 @@ exports.seed = async (knex) => {
     },
     {
       id: 'usr_fdbb420c-0d31-4c2e-91a6-90022c664928',
-      firebaseUid: 'FJPEG0anjdbdxx58WO8CLN9BZPe2',  // this refers to a user that has been created in firebase manually for 
+      firebaseUid: '3FE6k2iYWiddTCiOOuLKuiGQ0dw1',  // this refers to a user that has been created in firebase manually for a Super User - local.superuser@fluenccy.com
       firstName: 'Super',
       lastName: 'User',
       role: 'superuser',
       tokenSet: null,
-    },
-
-    {
-      id: 'usr_3a91afec-90c4-11eb-a8b3-0242ac130003',
-      accountId: 'acc_295b1bb4-90c4-11eb-a8b3-0242ac130003',
-      firebaseUid: '0xSL46ro5khLBE8eT8UkN22Aj6G2',  // this refers to a user that has been created in firebase manually for 
-      firstName: 'Naseer',
-      lastName: 'Mohammad',
-      role: 'accountowner',
-      tokenSet: null,
-    },
-    {
-      id: 'usr_406f249e-90c4-11eb-a8b3-0242ac130003',
-      firebaseUid: '99SIoYQLImZtxq5NvgHnqG2xE4v2',
-      firstName: 'Saif',
-      lastName: 'Rehman',
-      role: 'superuser',
-      tokenSet: null,
-    },
+    }
   ]);
 
   await knex('tenant').insert([
