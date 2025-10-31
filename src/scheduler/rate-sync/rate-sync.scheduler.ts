@@ -10,7 +10,7 @@ import { dbService, loggerService } from '@server/common';
 import { rateDbCreators, rateDbGetters, rateResource, STORED_CURRENCY_PAIRS, DEFAULT_FETCH_FOR_DAYS } from '@server/rate';
 
 const scheduler = 'RateSyncScheduler';
-const runRateSync = async () => {
+export const runRateSync = async (shouldExit: boolean = false) => {
   await dbService.init();
   loggerService.info('Running Rate sync.', { scheduler });
 
@@ -67,7 +67,12 @@ const runRateSync = async () => {
   });
 
   loggerService.info('Rate sync complete.', { scheduler });
-  process.exit();
+  if (shouldExit) {
+    process.exit();
+  }
 };
 
-runRateSync();
+// Only run if this file is executed directly (not imported)
+if (require.main === module) {
+  runRateSync(true);
+}
