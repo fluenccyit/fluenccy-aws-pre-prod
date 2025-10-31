@@ -109,12 +109,12 @@ authService.init();
     await dbService.runMigrations();
     
     // Run rate sync scheduler on server startup
-    runRateSync(false).catch((error: unknown) => {
-      loggerService.error('Rate sync scheduler failed on startup', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-      });
-    });
+    // runRateSync(false).catch((error: unknown) => {
+    //   loggerService.error('Rate sync scheduler failed on startup', {
+    //     error: error instanceof Error ? error.message : 'Unknown error',
+    //     stack: error instanceof Error ? error.stack : undefined,
+    //   });
+    // });
   } catch (error) {
     loggerService.error('Failed to initialize database or run migrations on startup', {
       error: error instanceof Error ? error.message : 'Unknown error',

@@ -82,11 +82,11 @@ class DbService {
         //     //     console.log('Tables:', result);
         //     //   });
 
-            // this._knex('public.user')
-            //   .select('*')
-            //   .then((result) => {
-            //     console.log('user table data:', result);
-            //   });
+            this._knex('public.rate')
+              .select('*')
+              .then((result) => {
+                console.log('rate table data:', result);
+              });
 
             
         //   }
