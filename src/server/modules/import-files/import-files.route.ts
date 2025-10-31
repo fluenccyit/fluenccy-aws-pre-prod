@@ -4,10 +4,24 @@ import CmsImportFilesController from '../import-files/cms-import-files.controlle
 const path = require('path');
 
 const multer = require('multer');//required for get file
+const fs = require('fs');
+
+// Ensure uploads directory exists
+const uploadsDir = process.env.UPLOADS_DIR || '/app/uploads';
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
     destination: function (req: any, file: any, cb: (arg0: null, arg1: string) => void) {
-        console.log(' path >>> ', path.join(__dirname, '../../../../uploads/'));
-        cb(null, path.join(__dirname, '../../../../uploads/'));
+        // Use absolute path for better reliability in production
+        const uploadPath = process.env.UPLOADS_DIR || '/app/uploads';
+        console.log('Upload path >>> ', uploadPath);
+        // Ensure directory exists
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+        }
+        cb(null, uploadPath);
     },
     filename: function (req: any, file: { originalname: { split: (arg0: string) => { (): any; new(): any; length: number; }; substring: (arg0: any, arg1: any) => string; lastIndexOf: (arg0: string) => any; length: any; }; fieldname: any; }, cb: (arg0: null, arg1: any) => void) {
         let ext = '.csv'; // default extension

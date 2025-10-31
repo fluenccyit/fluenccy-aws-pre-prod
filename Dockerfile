@@ -4,8 +4,6 @@ FROM node:14.21.3-alpine
 # Set working directory
 WORKDIR /app
 
-RUN mkdir -p /app/uploads
-
 # Install system dependencies
 RUN apk add --no-cache \
     python3 \
@@ -32,6 +30,11 @@ RUN yarn install --frozen-lockfile --production=true && \
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nextjs -u 1001
+
+# Create uploads directory and ensure proper permissions
+RUN mkdir -p /app/uploads && \
+    chown -R nextjs:nodejs /app/uploads && \
+    chmod 755 /app/uploads
 
 # Change ownership of the app directory
 RUN chown -R nextjs:nodejs /app
