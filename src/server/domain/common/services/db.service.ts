@@ -94,8 +94,14 @@ class DbService {
 
         loggerService.info('Database connected successfully.');
         
+        // For debug purposes, drop all tables
+        // await this.dropAllTables();
+
+        // Only when we are sure we want to reset the DB, delete seed data
+        // await this.deleteSeedData();
+
         // Check if user table is empty and run seeding if needed
-        // await this.checkAndSeedDatabase();
+        await this.checkAndSeedDatabase();
       } catch (error) {
         loggerService.error('Failed to connect to the database.', {
           service: 'DbService',
@@ -204,6 +210,19 @@ class DbService {
       .then(() => {
         console.log('Dropped all specified tables for debug purposes.');
       });
+  };
+
+  // Only used when we need to seed the DB again with initial data
+  deleteSeedData = async () => {
+    if (!this._knex) {
+      throw new Error('Database connection not initialized. Call init() first.');
+    }
+
+    await this._knex('organisation_user').del();
+    await this._knex('organisation').del();
+    await this._knex('tenant').del();
+    await this._knex('user').del();
+    await this._knex('account').del();
   };
 
   checkAndSeedDatabase = async () => {
