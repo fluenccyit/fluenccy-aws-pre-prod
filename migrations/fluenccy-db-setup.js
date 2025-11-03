@@ -442,20 +442,20 @@ exports.up = function (knex) {
     })
     .createTable('crm_feedback', (table) => {
       table.string('id').primary().unique();
-      table.string('orgId').notNullable();
+      table.string('orgId');
       table.foreign('orgId').references('organisation.id');
-      table.string('userId').notNullable();
+      table.string('userId');
       table.foreign('userId').references('user.id');
       table.string('crm_entry_id');
       table.foreign('crm_entry_id').references('crm_entries.id');
-      table.string('feedbackType').notNullable();
-      table.text('feedbackText').notNullable();
+      table.string('feedbackType');
+      table.text('feedbackText');
       table.integer('rating');
-      table.string('status').notNullable();
+      table.string('status');
       table.decimal('reservedRate', 17, 5);
       table.date('reservedDate');
       table.decimal('reservedAmount', 17, 5);
-      table.timestamp('submittedAt').notNullable();
+      table.timestamp('submittedAt');
       table.string('createdBy');
       table.string('updatedBy');
       table.string('crm_import_log_id');

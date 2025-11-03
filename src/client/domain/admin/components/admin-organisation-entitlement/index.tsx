@@ -27,6 +27,8 @@ const defaultValues = {
   spotMarginPercentage: 0.5,
   setOptimised: false,
   showInversedRate: false,
+  minForwardPercent: 10,
+  maxForwardPercent: 25,
 };
 
 const options = [
@@ -109,8 +111,8 @@ export const OrgEntitlementContainer = () => {
             fi_name,
             minPercentAboveSpot,
             maxPercentOnOrder,
-            minForwardPercent,
-            maxForwardPercent,
+            minForwardPercent: minForwardPercent ?? defaultValues.minForwardPercent,
+            maxForwardPercent: maxForwardPercent && maxForwardPercent > 0 ? maxForwardPercent : defaultValues.maxForwardPercent,
             orderProbability,
             minimumProbability,
             maximumProbability,

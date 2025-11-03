@@ -113,7 +113,7 @@ export const OrgEntitlements = ({ data, orgId, callback, mode }) => {
       key: 'minForwardPercent',
       range: {
         min: 10,
-        max: values.maxForwardPercent,
+        max: values.maxForwardPercent && values.maxForwardPercent > 0 ? values.maxForwardPercent : 25,
       },
       postFix: '%',
       default: 10,
@@ -122,7 +122,7 @@ export const OrgEntitlements = ({ data, orgId, callback, mode }) => {
       title: 'Max Forward',
       key: 'maxForwardPercent',
       range: {
-        min: values.minForwardPercent,
+        min: values.minForwardPercent && values.minForwardPercent > 0 ? values.minForwardPercent : 10,
         max: 25,
       },
       postFix: '%',
