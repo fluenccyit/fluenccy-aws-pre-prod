@@ -5,7 +5,7 @@ import { ForwardPointDbo, rateDbGetters, RateDbo, rateService } from '@server/ra
 import Knex from 'knex';
 
 class CmsEntriesDbGetters {
-  async getEntries(orgId: string, currencyCode: string, type: string = 'unmanged') {
+  async getEntries(orgId: string, currencyCode: string, type: string = 'unmanaged') {
     try {
       
       const qry = dbService.table('crm_entries')
