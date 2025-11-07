@@ -60,6 +60,7 @@ export const QuotePayablePageContainer = memo(
     const [impactHeight, setImpactHeight] = useState(40.5);
     const [optimiseHeight, setOptimiseHeight] = useState(40.5);
     const forwardPoints = useRef({});
+    const lastProcessedAddNew = useRef(0);
 
     const { addToast } = useToast();
 
@@ -90,18 +91,33 @@ export const QuotePayablePageContainer = memo(
     }, [generateQuote]);
 
     useEffect(() => {
-      const isAdded = payable.find((r) => r.id === addNew);
-      if (!isAdded && addNew) {
-        const lastInvoice = payable[payable.length - 1] || {};
-        const newId = (lastInvoice.id || 0) + 1;
-        setPayable([...payable, { ...newInvoice, id: newId }]);
+      // Reset ref when addNew is reset to 0
+      if (addNew === 0) {
+        lastProcessedAddNew.current = 0;
+        return;
       }
-    }, [addNew, payable]);
+      
+      // Only process if addNew has changed and is a valid value
+      if (addNew && addNew !== lastProcessedAddNew.current) {
+        setPayable((prevPayable) => {
+          // Check if invoice with this addNew value already exists
+          const isAdded = prevPayable.find((r) => r.id === addNew);
+          if (!isAdded) {
+            const lastInvoice = prevPayable[prevPayable.length - 1] || {};
+            const newId = (lastInvoice.id || 0) + 1;
+            lastProcessedAddNew.current = addNew;
+            return [...prevPayable, { ...newInvoice, id: newId }];
+          }
+          return prevPayable;
+        });
+      }
+    }, [addNew]);
 
     useEffect(() => {
       if (deleteMode) {
         const payables = payable.filter((p) => !p.isNew);
         setPayable(payables);
+        lastProcessedAddNew.current = 0; // Reset ref when deleting
       }
     }, [deleteMode]);
 
@@ -115,6 +131,7 @@ export const QuotePayablePageContainer = memo(
     useEffect(() => {
       if (clearMode) {
         bulkDelete();
+        lastProcessedAddNew.current = 0; // Reset ref when clearing
       }
     }, [clearMode]);
 
