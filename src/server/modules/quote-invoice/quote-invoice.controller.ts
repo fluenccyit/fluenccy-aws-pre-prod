@@ -126,6 +126,7 @@ class QuoteInvoiceController extends BaseController {
                             tenantId: req.body.tenantId,
                             provider:  isXeroConnected ? 'xero' : 'fluenccy',
                             invoiceStatus: req.body.mode ? 'RECEIVABLE' : 'PAYABLE',
+                            type: record.type ?? req.body.type,
                             invoiceType: record.mode ? 'ACCREC' : 'ACCPAY'
                         }
                         await quoteInvoiceDbCreators.createInvoice(tempInvoice);
