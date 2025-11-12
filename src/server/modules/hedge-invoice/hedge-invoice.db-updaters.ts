@@ -31,6 +31,7 @@ class HedgeInvoiceDbUpdater {
         .update('counterPartyEntitlementItemId', counterPartyEntitlementItemId);
       
     } catch( error ) {
+      console.log('error ', error)
       throw errorService.handleDbError('hedge_invoice', error);
     }
   }

@@ -268,7 +268,10 @@ exports.up = function (knex) {
       table.boolean('isPricing').notNullable().defaultTo(false);
       table.string('movedTo');
       table.string('movedToId');
-      
+      table.string('manage_type');
+      table.boolean('isGeneratedTermSheet').notNullable().defaultTo(false);
+      table.string('pricingLabelField');
+      table.string('counterPartyEntitlementItemId');
       table.primary(['tenantId', 'invoiceId', 'provider']);
       table.timestamps(false, true);
     })
@@ -305,16 +308,19 @@ exports.up = function (knex) {
       table.timestamps(false, true);
     })
     .createTable('buying_schedule', (table) => {
-      table.string('id').primary().unique();
-      table.string('orgId').notNullable();
+      table.string('id').primary();
+      table.string('orgId');
       table.foreign('orgId').references('organisation.id');
-      table.string('invoiceId');
-      table.string('scheduleName').notNullable();
-      table.string('currencyPair').notNullable();
-      table.decimal('amount', 17, 5).notNullable();
-      table.string('frequency').notNullable();
-      table.date('startDate').notNullable();
+      table.string('invoiceId').unique();
+      table.string('scheduleName');
+      table.string('currencyPair');
+      table.decimal('amount', 17, 5);
+      table.string('frequency');
+      table.date('startDate');
       table.date('endDate');
+      table.decimal('deltaRate', 17, 5);
+      table.decimal('spotRate', 17, 5);
+      table.decimal('strikeRate', 17, 5);
       table.boolean('isActive').notNullable().defaultTo(true);
       table.jsonb('scheduleConfig');
       

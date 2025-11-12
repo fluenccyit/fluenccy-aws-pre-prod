@@ -8,7 +8,7 @@ class HedgeInvoiceDbCreators {
       if (buyingSchedule.isHedgedEverything) {
         buyingSchedule.optimaisedPer = 100;
       }
-      await dbService.table('buying_schedule').insert(buyingSchedule).onConflict( "invoiceId" ).merge();
+      await dbService.table('buying_schedule').insert({...buyingSchedule, id: sharedUtilService.generateUid()}).onConflict( "invoiceId" ).merge();
     } catch (error) {
       console.log('error ', error)
       throw errorService.handleDbError('createOrganisationUser', error);
